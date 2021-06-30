@@ -1,6 +1,6 @@
 import { IncomingHttpHeaders } from 'http';
 import { AxiosResponse } from 'axios';
-import { WebAPICallResult } from './WebClient';
+import { WebAPICallOptions, WebAPICallResult } from './WebClient';
 
 /**
  * All errors produced by this package adhere to this interface
@@ -26,6 +26,8 @@ export interface WebAPIPlatformError extends CodedError {
   data: WebAPICallResult & {
     error: string;
   };
+  method?: string;
+  options?: WebAPICallOptions;
 }
 
 export interface WebAPIRequestError extends CodedError {
@@ -88,13 +90,21 @@ export function httpErrorFromResponse(response: AxiosResponse): WebAPIHTTPError 
 /**
  * A factory to create WebAPIPlatformError objects
  * @param result - Web API call result
+ * @param method - Optional request method used
+ * @param options - Optional request options used
  */
-export function platformErrorFromResult(result: WebAPICallResult & { error: string; }): WebAPIPlatformError {
+export function platformErrorFromResult(
+  result: WebAPICallResult & { error: string; },
+  method?: string,
+  options?: WebAPICallOptions
+): WebAPIPlatformError {
   const error = errorWithCode(
     new Error(`An API error occurred: ${result.error}`),
     ErrorCode.PlatformError,
   ) as Partial<WebAPIPlatformError>;
   error.data = result;
+  error.method = method;
+  error.options = options;
   return (error as WebAPIPlatformError);
 }
 

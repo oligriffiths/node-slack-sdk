@@ -195,7 +195,7 @@ export class WebClient extends Methods {
     }
 
     if (!result.ok) {
-      throw platformErrorFromResult(result as (WebAPICallResult & { error: string; }));
+      throw platformErrorFromResult(result as (WebAPICallResult & { error: string; }), method, options);
     }
 
     return result;
